@@ -1,7 +1,6 @@
 #Create Functions
 
-Function Write-Log
-{
+Function Write-Log {
     Param ([string]$userInput)
 
     Write-Host $userInput
@@ -9,22 +8,16 @@ Function Write-Log
 
 #Main Script Body
 
-if 
-(
-    ([System.Environment]::OSVersion.Platform -eq 'Win32NT') `
-        -and 
-        (
-            (Get-ItemProperty `
-            -Path 'Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion' CurrentMajorVersionNumber).CurrentMajorVersionNumber `
-            -eq 10 `
-        ) `
-        -and ((Get-WmiObject Win32_OperatingSystem).OSArchitecture -eq '64-bit')
-)
-{
+$platformCheck = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+$versionCheck = (Get-ItemProperty -Path `
+    'Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion' CurrentMajorVersionNumber).CurrentMajorVersionNumber `
+     -eq 10
+$architectureCheck = (Get-WmiObject Win32_OperatingSystem).OSArchitecture -eq '64-bit'
+
+if ($platformCheck -and $versionCheck -and $architectureCheck) {
     Write-Log 'Script running on Windows 10 64-bit. Proceeding'
 }
-else
-{
+else {
     Write-Log 'Script not running on Windows 10 64-bit. Exiting'
 }
 
