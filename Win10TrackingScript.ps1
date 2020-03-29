@@ -1,3 +1,7 @@
+# Script to Disable Windows Tracking Utilities
+# WIP
+# By Mike J. McGuirk
+
 #Create Functions
 
 Function Write-Log {
@@ -5,6 +9,8 @@ Function Write-Log {
 
     Write-Host $userInput
 }
+
+Write-Log ''
 
 #Check Windows Version
 
@@ -58,8 +64,18 @@ elseif ($expectedMinorVersion -eq $winVer.MinorVersion) {
 }
 
 Write-Log "Script running on an up-to-date Windows 10 64-bit system. Continuing"
+Write-Log ''
 
 #Implement Privacy Fixes
+
+Write-Log 'Removing and disabling Recent Items and Frequent Places'
+Remove-Item ($env:APPDATA + '\Microsoft\Windows\Recent\*.*') -Force
+Remove-Item ($env:APPDATA + '\Microsoft\Windows\Recent\AutomaticDestinations\*.*') -Force
+Remove-Item ($env:APPDATA + '\Microsoft\Windows\Recent\CustomDestinations\*.*') -Force
+Set-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'Start_TrackDocs' -Value 0
+
+Write-Log 'Disabling Activity Feed/Timeline and deleting old files'
+Remove-Item ($env:LOCALAPPDATA + '\Microsoft\Windows\History\*.*') -Force -Recurse
 
 Write-Log 'Disabling "Improve Typing" feature'
 Set-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Input\TIPC' -Name 'Enabled' -Value 0
@@ -69,3 +85,6 @@ Set-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\Control Panel\International\
 
 Write-Log 'Disabling Advertising Info Sends'
 Set-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo' -Name 'Enabled' -Value 0
+
+Write-Log ''
+Write-Log 'Tracking script complete. Restart recommended for all changes to take effect'
